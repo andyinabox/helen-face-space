@@ -4,7 +4,8 @@ var p5 = require('p5')
 
 var _data
 	, _canvas
-	, _currentIndex = 0;
+	, _currentIndex = 0
+	, _isAnimating = false;
 
 new p5(function(p) {
 	p.preload = function() {
@@ -14,6 +15,7 @@ new p5(function(p) {
 	p.setup = function() {
 		_canvas = p.createCanvas(p.windowWidth, p.windowHeight);
 
+		p.frameRate(10);
 
 		
 	}
@@ -23,7 +25,7 @@ new p5(function(p) {
 
 		var current = _data[_currentIndex]
 			, next = _data[_currentIndex+1]
-			, dotSize = 5
+			, dotSize = 3
 			, i, x1, y1, x2, y2;
 
 
@@ -31,37 +33,50 @@ new p5(function(p) {
 
 		for(i = 0; i < current.norm.length; i++) {
 
-			x1 = p.map(current.norm[i][0], 0, 1, 0, 500);
-			y1 = p.map(current.norm[i][1], 0, 1, 0, 500);
-			x2 = p.map(next.norm[i][0], 0, 1, 500, 1000);
-			y2 = p.map(next.norm[i][1], 0, 1, 0, 500);
+			x1 = p.map(current.norm[i][0], 0, 1, 50, 50+p.height/3);
+			y1 = p.map(current.norm[i][1], 0, 1, p.height/3, 2*p.height/3);
+			x2 = p.map(next.norm[i][0], 0, 1, p.width/2, p.width-50);
+			y2 = p.map(next.norm[i][1], 0, 1, 50, p.width/2);
 
-			// draw left face
-			p.ellipse(
-				x1
-				, y1
-				, dotSize
-				, dotSize
-			);
 
-			// draw right face
-			p.ellipse(
-				x2
-				, y2
-				, dotSize
-				, dotSize
-			);			
+			p.push();
+				p.noStroke();
+				// draw left face
+				p.ellipse(x1, y1, dotSize, dotSize);
+
+				// draw right face
+				p.ellipse(x2, y2, dotSize, dotSize);
+			p.pop();
 
 			// draw lines
-			
-			// p.line()
+			p.push();
+				p.noFill();
+				p.stroke(255, 255, 255, 127);
+				p.line(x1, y1, x2, y2);
+			p.pop();
 
+		}
+
+		// draw prompt
+		p.push();
+			p.fill(255);
+			p.textSize(12);
+			p.textAlign(p.CENTER)
+			p.text("Use j/k to advance faces, spacebar plays animation", p.width/2, p.height-20);
+		p.pop();
+
+		if(_isAnimating) {
+			_currentIndex++;
 		}
 	}
 
 	p.keyTyped = function() {
 		if(p.key === 'k') {
 			_currentIndex++;
+		} else if(p.key === 'j' && _currentIndex > 0) {
+			_currentIndex--;
+		} else if(p.key === ' ') {
+			_isAnimating = !_isAnimating;
 		}
 	}
 

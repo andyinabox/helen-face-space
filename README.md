@@ -1,17 +1,5 @@
-# helen-face-space
+# Helen Face Space
 
-[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
+Exploring face space with the [Helen image dataset](http://www.ifp.illinois.edu/~vuongle2/helen/).
 
-
-
-## Usage
-
-[![NPM](https://nodei.co/npm/helen-face-space.png)](https://www.npmjs.com/package/helen-face-space)
-
-## Contributing
-
-See [stackgl/contributing](https://github.com/stackgl/contributing) for details.
-
-## License
-
-MIT. See [LICENSE.md](http://github.com/andyinabox/helen-face-space/blob/master/LICENSE.md) for details.
+http://andyinabox.github.io/helen-face-space/
