@@ -25,10 +25,11 @@ new p5(function(p) {
 
 		var current = _data[_currentIndex]
 			, next = _data[_currentIndex+1]
+			, third = _data[_currentIndex+2]
 			, dotSize = 3
 			, i, x1, y1, x2, y2, aspect1, aspect2
 
-		var size = p.height/3
+		var size = p.width/5
 			, padding = p.height/6;
 
 		// for(i = 0; i < current.norm.length; i++) {
@@ -69,17 +70,23 @@ new p5(function(p) {
 				p.noStroke();
 				// draw left face
 				p.push();
-					p.translate(padding, padding);
-					drawFace(current, 400, dotSize);
-				p.pop()
+					p.translate(padding, p.height-size-padding);
+					drawFace(current, size, dotSize);
+				p.pop();
 
-
+				// draw middle face
+				p.push();
+					var middleSize = size*1.5;
+					p.translate(p.width/2-middleSize/2, padding);
+					drawFace(next, middleSize, dotSize);
+				p.pop();
 
 				// draw right face
 				p.push();
-					p.translate(p.width-padding-400, padding);
-					drawFace(next, 400, dotSize);
+					p.translate(p.width-padding-size, p.height-padding-size);
+					drawFace(third, size, dotSize);
 				p.pop();
+
 			p.pop();
 
 		// draw prompt
@@ -107,15 +114,42 @@ new p5(function(p) {
 
 
 	function drawFace(d, faceSize, dotSize) {
-		var aspect = d.size[0]/d.size[1]
-			, x, y, i;
+		var mapped = getMappedFace(d, faceSize);
 
-		d.norm.forEach(function(point, i) {
+		mapped.forEach(function(point) {
+			p.ellipse(point.x, point.y, dotSize, dotSize);
+		});
+
+		return mapped;
+	}
+
+	function getMappedFace(d, faceSize) {
+		var aspect = d.size[0]/d.size[1];
+		return d.norm.map(function(point, i) {
 			x = p.map(point[0], 0, 1, 0, faceSize*aspect);	
 			y = p.map(point[1], 0, 1, 0, faceSize);
-			p.ellipse(x, y, dotSize, dotSize);
+			
+			return {x:x, y:y};
 		});
 	}
+
+
+	// function drawLines(faces, sizes) {
+	// 	var len = faces[0].norm.length
+	// 		, i, j;
+
+	// 	p.beginShape();
+
+	// 	for(i = 0; i < len; i++) {
+	// 		faces.forEach(function(f, i) {
+	// 			var mapped = getMappedFace(f, sizes[i]);
+
+	// 		});
+	// 	}
+
+	// 	p.endShape();
+
+	// }
 
 	function parseData(data) {
 
