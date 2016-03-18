@@ -31,39 +31,56 @@ new p5(function(p) {
 		var size = p.height/3
 			, padding = p.height/6;
 
-		for(i = 0; i < current.norm.length; i++) {
+		// for(i = 0; i < current.norm.length; i++) {
 
-			aspect1 = current.size[0]/current.size[1];
-			aspect2 = next.size[0]/next.size[1];
-			topPadding1 = p.noise(.1*_currentIndex)*padding+padding;
-			topPadding2 = p.noise(.1*_currentIndex+1)*padding+padding;
-			x1 = p.map(current.norm[i][0], 0, 1, padding, padding+(size*aspect2));
-			y1 = p.map(current.norm[i][1], 0, 1, topPadding1, topPadding1+size);
-			x2 = p.map(next.norm[i][0], 0, 1, p.width-(size*aspect2)-padding, p.width-padding);
-			y2 = p.map(next.norm[i][1], 0, 1, topPadding2, topPadding2+size);
+		// 	aspect1 = current.size[0]/current.size[1];
+		// 	aspect2 = next.size[0]/next.size[1];
+		// 	topPadding1 = p.noise(.1*_currentIndex)*padding+padding;
+		// 	topPadding2 = p.noise(.1*_currentIndex+1)*padding+padding;
+		// 	x1 = p.map(current.norm[i][0], 0, 1, padding, padding+(size*aspect2));
+		// 	y1 = p.map(current.norm[i][1], 0, 1, topPadding1, topPadding1+size);
+		// 	x2 = p.map(next.norm[i][0], 0, 1, p.width-(size*aspect2)-padding, p.width-padding);
+		// 	y2 = p.map(next.norm[i][1], 0, 1, topPadding2, topPadding2+size);
 
+
+		// 	p.push();
+		// 		p.noStroke();
+		// 		// draw left face
+		// 		p.ellipse(x1, y1, dotSize, dotSize);
+
+		// 		// draw right face
+		// 		p.ellipse(x2, y2, dotSize, dotSize);
+		// 	p.pop();
+
+		// 	// draw lines
+		// 	p.push();
+		// 		p.noFill();
+		// 		p.stroke(255, 255, 255, 50);
+		// 		p.line(-padding, p.height/2, x1, y1);
+		// 		p.stroke(255, 255, 255, 127);
+		// 		p.line(x1, y1, x2, y2);
+		// 		p.stroke(255, 255, 255, 50);
+		// 		p.line(x2, y2, p.width+padding, p.height/2);
+		// 	p.pop();
+
+		// }
 
 			p.push();
 				p.noStroke();
 				// draw left face
-				p.ellipse(x1, y1, dotSize, dotSize);
+				p.push();
+					p.translate(padding, padding);
+					drawFace(current, 400, dotSize);
+				p.pop()
+
+
 
 				// draw right face
-				p.ellipse(x2, y2, dotSize, dotSize);
+				p.push();
+					p.translate(p.width-padding-400, padding);
+					drawFace(next, 400, dotSize);
+				p.pop();
 			p.pop();
-
-			// draw lines
-			p.push();
-				p.noFill();
-				p.stroke(255, 255, 255, 50);
-				p.line(-padding, p.height/2, x1, y1);
-				p.stroke(255, 255, 255, 127);
-				p.line(x1, y1, x2, y2);
-				p.stroke(255, 255, 255, 50);
-				p.line(x2, y2, p.width+padding, p.height/2);
-			p.pop();
-
-		}
 
 		// draw prompt
 		p.push();
@@ -86,6 +103,18 @@ new p5(function(p) {
 		} else if(p.key === ' ') {
 			_isAnimating = !_isAnimating;
 		}
+	}
+
+
+	function drawFace(d, faceSize, dotSize) {
+		var aspect = d.size[0]/d.size[1]
+			, x, y, i;
+
+		d.norm.forEach(function(point, i) {
+			x = p.map(point[0], 0, 1, 0, faceSize*aspect);	
+			y = p.map(point[1], 0, 1, 0, faceSize);
+			p.ellipse(x, y, dotSize, dotSize);
+		});
 	}
 
 	function parseData(data) {
