@@ -18,7 +18,7 @@ new p5(function(p) {
 
 		p.frameRate(10);
 
-		
+		console.log(_data[_currentIndex]);
 	}
 
 	p.draw = function() {
@@ -27,17 +27,21 @@ new p5(function(p) {
 		var current = _data[_currentIndex]
 			, next = _data[_currentIndex+1]
 			, dotSize = 3
-			, i, x1, y1, x2, y2;
+			, i, x1, y1, x2, y2, aspect1, aspect2
 
-
-
+		var size = p.height/3
+			, padding = p.height/6;
 
 		for(i = 0; i < current.norm.length; i++) {
 
-			x1 = p.map(current.norm[i][0], 0, 1, 50, 50+p.height/3);
-			y1 = p.map(current.norm[i][1], 0, 1, p.height/3, 2*p.height/3);
-			x2 = p.map(next.norm[i][0], 0, 1, p.width/2, p.width-50);
-			y2 = p.map(next.norm[i][1], 0, 1, 50, p.width/2);
+			aspect1 = current.size[0]/current.size[1];
+			aspect2 = next.size[0]/next.size[1];
+			topPadding1 = p.noise(.1*_currentIndex)*padding+padding;
+			topPadding2 = p.noise(.1*_currentIndex+1)*padding+padding;
+			x1 = p.map(current.norm[i][0], 0, 1, padding, padding+(size*aspect2));
+			y1 = p.map(current.norm[i][1], 0, 1, topPadding1, topPadding1+size);
+			x2 = p.map(next.norm[i][0], 0, 1, p.width-(size*aspect2)-padding, p.width-padding);
+			y2 = p.map(next.norm[i][1], 0, 1, topPadding2, topPadding2+size);
 
 
 			p.push();
@@ -52,8 +56,12 @@ new p5(function(p) {
 			// draw lines
 			p.push();
 				p.noFill();
+				p.stroke(255, 255, 255, 50);
+				p.line(-padding, p.height/2, x1, y1);
 				p.stroke(255, 255, 255, 127);
 				p.line(x1, y1, x2, y2);
+				p.stroke(255, 255, 255, 50);
+				p.line(x2, y2, p.width+padding, p.height/2);
 			p.pop();
 
 		}
@@ -86,6 +94,8 @@ new p5(function(p) {
 		data.forEach(function(d) {
 			var xExtent = d3.extent(d.points.map(function(p) { return p[0]; }));
 			var yExtent = d3.extent(d.points.map(function(p) { return p[1]; }));
+			var xSize = p.abs(xExtent[0]-xExtent[1]);
+			var ySize = p.abs(yExtent[0]-yExtent[1]);
 
 			// normalization scale
 			var xScale = d3.scale.linear().domain(xExtent);
@@ -94,6 +104,8 @@ new p5(function(p) {
 			d.norm = d.points.map(function(p) {
 				return [xScale(p[0]), yScale(p[1])];
 			});
+
+			d.size = [xSize, ySize];
 		});
 
 		_data = data;
