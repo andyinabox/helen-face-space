@@ -1,0 +1,35 @@
+{
+  "name": "helen-face-space",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "budo index.js --open --live --css styles.css",
+    "parse": "node scripts/parse.js"
+  },
+  "author": {
+    "name": "Andy Dayton",
+    "email": "amdayton@gmail.com",
+    "url": "http://andydayton.com/"
+  },
+  "dependencies": {
+    "d3": "^3.5.16",
+    "exdat": "^0.6.2",
+    "p5": "^0.4.23"
+  },
+  "devDependencies": {
+    "budo": "~7.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/andyinabox/helen-face-space.git"
+  },
+  "keywords": [
+    "ecosystem:stackgl"
+  ],
+  "homepage": "https://github.com/andyinabox/helen-face-space",
+  "bugs": {
+    "url": "https://github.com/andyinabox/helen-face-space/issues"
+  }
+}
