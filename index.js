@@ -65,36 +65,30 @@ new p5(function(p) {
 		// 	p.pop();
 
 		// }
+		
+		var middleSize = size*1.5;
 
-			p.push();
-				p.noStroke();
-				// draw left face
-				p.push();
-					p.translate(padding, p.height-size-padding);
-					drawFace(current, size, dotSize);
-				p.pop();
 
-				// draw middle face
-				p.push();
-					var middleSize = size*1.5;
-					p.translate(p.width/2-middleSize/2, padding);
-					drawFace(next, middleSize, dotSize);
-				p.pop();
+		p.push();
+			p.noStroke();
 
-				// draw right face
-				p.push();
-					p.translate(p.width-padding-size, p.height-padding-size);
-					drawFace(third, size, dotSize);
-				p.pop();
+			// draw left face
+			drawFace(current, padding, p.height-size-padding, size, dotSize);
 
-			p.pop();
+			// draw middle face
+			drawFace(next, p.width/2-middleSize/2, padding, middleSize, dotSize);
+
+			// draw right face
+			drawFace(third, p.width-padding-size, p.height-padding-size, size, dotSize);
+
+		p.pop();
 
 		// draw prompt
 		p.push();
 			p.fill(255);
 			p.textSize(12);
 			p.textAlign(p.CENTER)
-			p.text("Use j/k to advance faces, spacebar plays animation", p.width/2, p.height-20);
+			p.text("Use j/k to advance faces, spacebar plays animation!!!", p.width/2, p.height-20);
 		p.pop();
 
 		if(_isAnimating) {
@@ -113,11 +107,11 @@ new p5(function(p) {
 	}
 
 
-	function drawFace(d, faceSize, dotSize) {
+	function drawFace(d, x, y, faceSize, dotSize) {
 		var mapped = getMappedFace(d, faceSize);
 
 		mapped.forEach(function(point) {
-			p.ellipse(point.x, point.y, dotSize, dotSize);
+			p.ellipse(point.x+x, point.y+y, dotSize, dotSize);
 		});
 
 		return mapped;
