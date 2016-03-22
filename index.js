@@ -2,10 +2,16 @@ var p5 = require('p5')
 	, dat = require('exdat')
 	, d3 = require('d3')
 
+var POINTS_COUNT = 194;
+
 var _data
 	, _canvas
 	, _currentIndex = 0
-	, _isAnimating = false;
+	, _isAnimating = true;
+
+var _bgColor
+	, _circleColor
+	, _lineColor;
 
 new p5(function(p) {
 	p.preload = function() {
@@ -15,22 +21,28 @@ new p5(function(p) {
 	p.setup = function() {
 		_canvas = p.createCanvas(p.windowWidth, p.windowHeight);
 
-		p.frameRate(10);
+		p.frameRate(12);
 
-		console.log(_data[_currentIndex]);
+		_bgColor = p.color(0, 0, 15);
+		_circleColor = p.color(15, 15, 0);
+		_lineColor = p.color(255, 200, 200, 85);
+
+		// console.log(_data[_currentIndex]);
 	}
 
 	p.draw = function() {
-		p.background(0);
+		p.background(_bgColor);
 
 		var current = _data[_currentIndex]
 			, next = _data[_currentIndex+1]
 			, third = _data[_currentIndex+2]
-			, dotSize = 3
+			, dotSize = 0
 			, i, x1, y1, x2, y2, aspect1, aspect2
 
+
 		var size = p.width/5
-			, padding = p.height/6;
+			, yPadding = p.height/6
+			, xPadding = p.height/10;
 
 		// for(i = 0; i < current.norm.length; i++) {
 
@@ -66,33 +78,100 @@ new p5(function(p) {
 
 		// }
 		
-		var middleSize = size*1.5;
+		var middleSize = size*1.5
+			, firstTranslation = [xPadding, p.height-size-yPadding]
+			, secondTranslation = [p.width/2-middleSize/2, yPadding]
+			, thirdTranslation = [p.width-xPadding-size, p.height-yPadding-size];
 
+		// p.push();
+		// 	p.fill(30);
+		// 	p.noStroke();
+		// 	// p.triangle(p.width/2, p.height-padding, 0, 0, p.width, 0);
+		// 	p.triangle(p.width/2, 0, p.width, p.height, 0, p.height);
+		// p.pop();
 
 		p.push();
 			p.noStroke();
 
 			// draw left face
-			drawFace(current, padding, p.height-size-padding, size, dotSize);
+			p.push();
+				p.translate(firstTranslation[0], firstTranslation[1]);
+				p.fill(_circleColor);
+				p.ellipse(size/2, size/2, size, size);
+				// p.fill(_bgColor);
+				// drawFace(current, size, dotSize);
+			p.pop();
 
 			// draw middle face
-			drawFace(next, p.width/2-middleSize/2, padding, middleSize, dotSize);
+			p.push();
+				p.translate(secondTranslation[0], secondTranslation[1]);
+				p.fill(_circleColor);
+				p.ellipse(middleSize/2, middleSize/2, middleSize, middleSize);
+				// p.fill(_bgColor);
+				// drawFace(next, middleSize, dotSize);
+			p.pop();
 
 			// draw right face
-			drawFace(third, p.width-padding-size, p.height-padding-size, size, dotSize);
+			p.push();
+				p.translate(thirdTranslation[0], thirdTranslation[1]);
+				p.fill(_circleColor);
+				p.ellipse(size/2, size/2, size, size);
+				// p.fill(_bgColor);
+				// drawFace(third, size, dotSize);
+			p.pop();
 
+		p.pop();
+
+		var i;
+
+		p.push();
+			p.noFill();
+			// p.stroke(_lineColor);
+			// p.stroke(255, 255, 255, 85);
+
+
+			var mapped = {
+				current: getMappedFace(current, size)
+				, next: getMappedFace(next, middleSize)
+				, third: getMappedFace(third, size)
+			};
+
+			for(i = 0; i < POINTS_COUNT; i++) {
+
+				// console.log(p.map(p.noise(_currentIndex, i), 0, 1, 0, 150));
+
+				_lineColor = p.color(
+					255
+					, 255
+					, 255
+					, p.int(p.map(p.noise(_currentIndex*.1, i*.01), 0, 1, 0, 125))
+				);
+				p.stroke(_lineColor)
+				p.beginShape();
+						// p.vertex(0, p.height/2);
+						p.vertex(mapped.current[i].x+firstTranslation[0], mapped.current[i].y+firstTranslation[1]);
+						p.vertex(mapped.next[i].x+secondTranslation[0], mapped.next[i].y+secondTranslation[1]);
+						p.vertex(mapped.third[i].x+thirdTranslation[0], mapped.third[i].y+thirdTranslation[1]);
+						p.vertex(mapped.current[i].x+firstTranslation[0], mapped.current[i].y+firstTranslation[1]);
+						// p.vertex(p.width, p.height/2);
+				p.endShape();
+			}
 		p.pop();
 
 		// draw prompt
-		p.push();
-			p.fill(255);
-			p.textSize(12);
-			p.textAlign(p.CENTER)
-			p.text("Use j/k to advance faces, spacebar plays animation!!!", p.width/2, p.height-20);
-		p.pop();
+		// p.push();
+		// 	p.fill(255);
+		// 	p.textSize(12);
+		// 	p.textAlign(p.CENTER)
+		// 	p.text("Use j/k to advance faces, spacebar plays animation!!!", p.width/2, p.height-20);
+		// p.pop();
 
 		if(_isAnimating) {
-			_currentIndex++;
+			if(_currentIndex+1 < _data.length) {
+				_currentIndex++;
+			} else {
+				_currentIndex = 0;
+			}
 		}
 	}
 
@@ -106,12 +185,16 @@ new p5(function(p) {
 		}
 	}
 
+	p.windowResized = function() {
+		p.resizeCanvas(p.windowWidth, p.windowHeight);
+	}
 
-	function drawFace(d, x, y, faceSize, dotSize) {
+
+	function drawFace(d, faceSize, dotSize) {
 		var mapped = getMappedFace(d, faceSize);
 
 		mapped.forEach(function(point) {
-			p.ellipse(point.x+x, point.y+y, dotSize, dotSize);
+			p.ellipse(point.x, point.y, dotSize, dotSize);
 		});
 
 		return mapped;
