@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "license": "MIT",
   "scripts": {
     "start": "budo index.js --open --live --css styles.css",
     "parse": "node scripts/parse.js",
