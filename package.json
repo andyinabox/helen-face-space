@@ -8,7 +8,7 @@
     "start": "budo index.js --open --live --css styles.css",
     "parse": "node scripts/parse.js",
     "build": "budo-demo index.js -c styles.css -i data",
-    "publish": "npm run build; gh-pages -d dist; npm run clean",
+    "deploy": "npm run build; gh-pages -d dist; npm run clean",
     "clean": "rm -r dist"
   },
   "author": {
