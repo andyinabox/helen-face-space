@@ -1,7 +1,7 @@
 {
   "name": "helen-face-space",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "Strollin' through the uncanny valley, whistlin’ in the dark",
   "main": "index.js",
   "scripts": {
     "start": "budo index.js --open --live --css styles.css",
